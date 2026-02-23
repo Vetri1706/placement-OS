@@ -37,10 +37,33 @@
 
     --radius: 0.75rem;
 
+    --bg-gradient-1: 225 30% 6%;
+    --bg-gradient-2: 230 25% 10%;
+    --bg-gradient-3: 225 20% 8%;
+    --orb-primary: 200 100% 55%;
+    --orb-secondary: 260 60% 60%;
+    --orb-accent: 170 80% 50%;
+    --bg-shine-opacity: 0.08;
+    --bg-vignette-opacity: 0.3;
+    --editor-bg-1: 225 28% 10%;
+    --editor-bg-2: 226 24% 8%;
+    --editor-bg-3: 230 18% 12%;
+    --editor-line-numbers: 220 18% 52%;
+    --editor-text: 210 36% 93%;
+    --editor-keyword: 334 79% 67%;
+    --editor-float-a: 200 100% 55%;
+    --editor-float-b: 260 70% 66%;
+    --editor-float-c: 170 75% 54%;
+
     /* Custom tokens */
     --glass-bg: 225 20% 100% / 0.05;
     --glass-border: 0 0% 100% / 0.1;
     --glass-border-subtle: 0 0% 100% / 0.05;
+    --glass-strong-bg: 225 20% 12% / 0.6;
+    --glass-inner-highlight: 0 0% 100% / 0.08;
+    --glass-shadow: 225 30% 0% / 0.4;
+    --glass-saturate: 140%;
+    --glass-shine: 0 0% 100%;
     --glow-primary: 200 100% 55%;
     --glow-secondary: 260 60% 60%;
     --glow-accent: 170 80% 50%;
@@ -60,6 +83,77 @@
     --shadow-md: 0px 1px 4.5px 0px hsla(0, 0%, 0%, 0.01);
     --shadow-lg: 0px 1px 7.5px 0px hsla(0, 0%, 0%, 0.01);
   }
+
+  .light {
+    --background: 220 20% 98%;
+    --foreground: 225 30% 12%;
+
+    --bg-gradient-1: 210 100% 99%;
+    --bg-gradient-2: 214 95% 96%;
+    --bg-gradient-3: 228 75% 93%;
+    --orb-primary: 200 95% 65%;
+    --orb-secondary: 262 70% 68%;
+    --orb-accent: 170 75% 58%;
+    --bg-shine-opacity: 0.36;
+    --bg-vignette-opacity: 0.08;
+    --editor-bg-1: 220 38% 96%;
+    --editor-bg-2: 216 34% 93%;
+    --editor-bg-3: 227 28% 90%;
+    --editor-line-numbers: 222 16% 54%;
+    --editor-text: 225 21% 25%;
+    --editor-keyword: 327 66% 52%;
+    --editor-float-a: 200 95% 70%;
+    --editor-float-b: 265 74% 72%;
+    --editor-float-c: 170 78% 60%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 225 30% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 225 30% 12%;
+
+    --primary: 200 90% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 260 55% 55%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 220 20% 93%;
+    --muted-foreground: 220 12% 38%;
+
+    --accent: 170 70% 42%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 18% 86%;
+    --input: 220 18% 86%;
+    --ring: 200 90% 45%;
+
+    --glass-bg: 0 0% 100% / 0.5;
+    --glass-border: 0 0% 100% / 0.78;
+    --glass-border-subtle: 220 32% 84% / 0.6;
+    --glass-strong-bg: 0 0% 100% / 0.62;
+    --glass-inner-highlight: 0 0% 100% / 0.95;
+    --glass-shadow: 215 45% 66% / 0.23;
+    --glass-saturate: 185%;
+    --glass-shine: 0 0% 100%;
+    --glow-primary: 200 90% 45%;
+    --glow-secondary: 260 55% 55%;
+    --glow-accent: 170 70% 42%;
+    --streak-orange: 25 90% 50%;
+
+    --sidebar-background: 220 20% 96%;
+    --sidebar-foreground: 225 20% 20%;
+    --sidebar-primary: 200 90% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 20% 90%;
+    --sidebar-accent-foreground: 225 20% 20%;
+    --sidebar-border: 220 18% 86%;
+    --sidebar-ring: 200 90% 45%;
+  }
+
   .dark {
     --font-sans: Roboto, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
     --shadow-sm: 0px 1px 1.5px 0px hsla(0, 0%, 0%, 0.01);
@@ -80,19 +174,139 @@
   }
 }
 
+.app-background {
+  background: linear-gradient(135deg, hsl(var(--bg-gradient-1)), hsl(var(--bg-gradient-2)), hsl(var(--bg-gradient-3)));
+}
+
+.app-background::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(1200px 600px at 12% -10%, hsl(var(--glass-shine) / var(--bg-shine-opacity)), transparent 70%),
+    radial-gradient(900px 520px at 88% 0%, hsl(var(--glass-shine) / calc(var(--bg-shine-opacity) * 0.8)), transparent 72%),
+    radial-gradient(1000px 680px at 50% 110%, hsl(225 30% 4% / var(--bg-vignette-opacity)), transparent 78%);
+}
+
+@keyframes driftA {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(16px, -14px, 0) scale(1.08); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes driftB {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-12px, 18px, 0) scale(1.06); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
 @layer components {
   .glass {
-    @apply backdrop-blur-xl border rounded-xl;
-    background: hsl(var(--glass-bg));
+    @apply backdrop-blur-2xl border rounded-xl;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, hsl(var(--glass-bg)), hsl(var(--glass-bg)));
     border-color: hsl(var(--glass-border));
-    box-shadow: inset 0 1px 1px 0 hsl(0 0% 100% / 0.05), 0 4px 30px hsl(225 30% 0% / 0.3);
+    -webkit-backdrop-filter: blur(26px) saturate(var(--glass-saturate));
+    backdrop-filter: blur(26px) saturate(var(--glass-saturate));
+    box-shadow: inset 0 1px 0 hsl(var(--glass-inner-highlight)), 0 18px 50px hsl(var(--glass-shadow));
+  }
+
+  .glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(120deg, hsl(var(--glass-shine) / 0.35) 0%, transparent 45%, transparent 60%, hsl(var(--glass-shine) / 0.2) 100%);
+  }
+
+  .light .glass::before {
+    background: linear-gradient(120deg, hsl(var(--glass-shine) / 0.62) 0%, transparent 45%, transparent 62%, hsl(var(--glass-shine) / 0.28) 100%);
   }
 
   .glass-strong {
     @apply backdrop-blur-2xl border rounded-xl;
-    background: hsl(225 20% 12% / 0.6);
+    background: hsl(var(--glass-strong-bg));
     border-color: hsl(var(--glass-border));
-    box-shadow: inset 0 1px 1px 0 hsl(0 0% 100% / 0.08), 0 8px 40px hsl(225 30% 0% / 0.4);
+    -webkit-backdrop-filter: blur(30px) saturate(var(--glass-saturate));
+    backdrop-filter: blur(30px) saturate(var(--glass-saturate));
+    box-shadow: inset 0 1px 0 hsl(var(--glass-inner-highlight)), 0 22px 60px hsl(var(--glass-shadow));
+  }
+
+  .editor-surface {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.85rem;
+    background: linear-gradient(145deg, hsl(var(--editor-bg-1)), hsl(var(--editor-bg-2)) 54%, hsl(var(--editor-bg-3)));
+    border: 1px solid hsl(var(--glass-border-subtle));
+    box-shadow: inset 0 1px 0 hsl(var(--glass-inner-highlight)), inset 0 -50px 80px hsl(225 30% 2% / 0.15);
+  }
+
+  .light .editor-surface {
+    box-shadow: inset 0 1px 0 hsl(var(--glass-inner-highlight)), inset 0 -42px 70px hsl(220 36% 72% / 0.22);
+  }
+
+  .editor-surface::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(125deg, hsl(0 0% 100% / 0.22), transparent 24%, transparent 78%, hsl(0 0% 100% / 0.12));
+  }
+
+  .editor-surface::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(500px 240px at 8% -10%, hsl(var(--editor-float-a) / 0.2), transparent 70%),
+      radial-gradient(440px 240px at 88% 102%, hsl(var(--editor-float-b) / 0.2), transparent 72%),
+      radial-gradient(360px 180px at 50% 100%, hsl(var(--editor-float-c) / 0.15), transparent 72%);
+    animation: driftA 11s ease-in-out infinite;
+  }
+
+  .editor-orb-a,
+  .editor-orb-b {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(38px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .editor-orb-a {
+    width: 180px;
+    height: 180px;
+    top: -68px;
+    right: 12%;
+    background: hsl(var(--editor-float-a) / 0.22);
+    animation: driftA 12s ease-in-out infinite;
+  }
+
+  .editor-orb-b {
+    width: 200px;
+    height: 200px;
+    bottom: -90px;
+    left: 10%;
+    background: hsl(var(--editor-float-b) / 0.2);
+    animation: driftB 14s ease-in-out infinite;
+  }
+
+  .editor-content {
+    position: relative;
+    z-index: 1;
+    color: hsl(var(--editor-text));
+  }
+
+  .editor-line-number {
+    color: hsl(var(--editor-line-numbers) / 0.55);
+  }
+
+  .editor-keyword {
+    color: hsl(var(--editor-keyword));
+    font-weight: 600;
   }
 
   .glow-primary {

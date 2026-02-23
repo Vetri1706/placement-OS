@@ -1,22 +1,55 @@
 import { motion } from "framer-motion";
+import { useMemo, useState } from "react";
 import GlassCard from "./GlassCard";
 import { Play, Copy, RotateCcw, ChevronDown } from "lucide-react";
 
-const codeLines = [
-  { num: 1, content: 'function', keyword: true, rest: ' twoSum(nums, target) {' },
-  { num: 2, content: '  const', keyword: true, rest: ' map = ', special: 'new', rest2: ' Map();' },
-  { num: 3, content: '  for', keyword: true, rest: ' (', special: 'let', rest2: ' i = 0; i < nums.length; i++) {' },
-  { num: 4, content: '    const', keyword: true, rest: ' complement = target - nums[i];' },
-  { num: 5, content: '    if', keyword: true, rest: ' (map.has(complement)) {' },
-  { num: 6, content: '      return', keyword: true, rest: ' [map.get(complement), i];' },
-  { num: 7, content: '    }', keyword: false, rest: '' },
-  { num: 8, content: '    map.set(nums[i], i);', keyword: false, rest: '' },
-  { num: 9, content: '  }', keyword: false, rest: '' },
-  { num: 10, content: '  return', keyword: true, rest: ' [];' },
-  { num: 11, content: '}', keyword: false, rest: '' },
-];
+const defaultCode = `function twoSum(nums, target) {
+  const map = new Map();
+  for (let i = 0; i < nums.length; i++) {
+    const complement = target - nums[i];
+    if (map.has(complement)) {
+      return [map.get(complement), i];
+    }
+    map.set(nums[i], i);
+  }
+  return [];
+}`;
+
+const highlightKeywords = (line: string) => {
+  const keywordRegex = /(\bfunction\b|\bconst\b|\bfor\b|\blet\b|\bif\b|\breturn\b|\bnew\b)/g;
+  const keywordSet = new Set(["function", "const", "for", "let", "if", "return", "new"]);
+  const segments = line.split(keywordRegex);
+
+  return segments.map((segment, index) => {
+    if (keywordSet.has(segment)) {
+      return (
+        <span key={`${segment}-${index}`} className="editor-keyword">
+          {segment}
+        </span>
+      );
+    }
+
+    return <span key={`${segment}-${index}`}>{segment}</span>;
+  });
+};
 
 const CodingEditorView = () => {
+  const [code, setCode] = useState(defaultCode);
+
+  const lines = useMemo(() => code.split("\n"), [code]);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+    } catch {
+      /* no-op */
+    }
+  };
+
+  const handleReset = () => {
+    setCode(defaultCode);
+  };
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-12 gap-4 h-[calc(100vh-120px)]">
       {/* Problem Panel */}
@@ -50,10 +83,10 @@ const CodingEditorView = () => {
               <span className="text-xs text-muted-foreground">solution.js</span>
             </div>
             <div className="flex items-center gap-2">
-              <button className="p-1.5 text-muted-foreground hover:text-foreground transition-colors">
+              <button onClick={handleCopy} className="p-1.5 text-muted-foreground hover:text-foreground transition-colors">
                 <Copy className="w-4 h-4" />
               </button>
-              <button className="p-1.5 text-muted-foreground hover:text-foreground transition-colors">
+              <button onClick={handleReset} className="p-1.5 text-muted-foreground hover:text-foreground transition-colors">
                 <RotateCcw className="w-4 h-4" />
               </button>
               <div className="flex items-center gap-1 glass rounded px-2 py-1 text-xs text-muted-foreground">
@@ -63,25 +96,25 @@ const CodingEditorView = () => {
           </div>
 
           {/* Code Area */}
-          <div className="flex-1 p-4 font-mono text-sm overflow-auto" style={{ background: "hsl(225 25% 5% / 0.5)" }}>
-            {codeLines.map((line, i) => (
+          <div className="editor-surface flex-1 p-4 font-mono text-sm overflow-auto">
+            <div className="editor-orb-a" />
+            <div className="editor-orb-b" />
+            <div className="editor-content">
+              {lines.map((line, i) => (
               <motion.div
-                key={line.num}
+                key={i + 1}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 + i * 0.05 }}
                 className="flex"
               >
-                <span className="w-8 text-right mr-4 text-muted-foreground/40 select-none text-xs leading-6">{line.num}</span>
-                <span className="leading-6">
-                  {line.keyword && <span style={{ color: "hsl(340 80% 65%)" }}>{line.content}</span>}
-                  {!line.keyword && <span className="text-foreground">{line.content}</span>}
-                  {line.rest && <span className="text-foreground">{line.rest}</span>}
-                  {line.special && <span style={{ color: "hsl(340 80% 65%)" }}>{line.special}</span>}
-                  {line.rest2 && <span className="text-foreground">{line.rest2}</span>}
+                <span className="editor-line-number w-8 text-right mr-4 select-none text-xs leading-6">{i + 1}</span>
+                <span className="leading-6 whitespace-pre-wrap">
+                  {highlightKeywords(line)}
                 </span>
               </motion.div>
-            ))}
+              ))}
+            </div>
           </div>
 
           {/* Run Button */}

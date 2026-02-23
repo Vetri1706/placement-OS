@@ -9,6 +9,7 @@ import AIInterviewView from "@/components/AIInterviewView";
 import ResourcesLibraryView from "@/components/ResourcesLibraryView";
 import StatsView from "@/components/StatsView";
 
+
 const views: Record<string, React.ComponentType> = {
   dashboard: DashboardView,
   ide: CodingEditorView,
