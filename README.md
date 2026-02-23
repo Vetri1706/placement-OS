@@ -1,73 +1,91 @@
-# Welcome to your Lovable project
+# AI Student Assistant
 
-## Project info
+> This is a computer program that helps students practice coding get ready for job interviews and prepare for placements all in one place on their computer.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+The AI Student Assistant is a program that you can use on your computer to help you get ready for a job in software engineering.
 
-## How can I edit this code?
+It puts together a few things like coding practice pretending to be in a job interview learning materials and tracking how you are doing all in one place.
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## Features We Are Planning
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- A place to practice coding
 
-Changes made via Lovable will be committed automatically to this repo.
+- A way to practice job interviews using artificial intelligence
 
-**Use your preferred IDE**
+- A way to see how you are doing and get some numbers about it
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- A library of helpful resources
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- A way to get ready for a job by setting goals
 
-Follow these steps:
+- You can use it even when you are not connected to the internet
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- It looks nice and works well
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- It is fast because it uses something called Electron
 
-# Step 3: Install the necessary dependencies.
-npm i
+---
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## Why We Made This Project
 
-**Edit a file directly in GitHub**
+Students who are getting ready for technical job interviews usually have to use many different websites and programs for coding, practicing interviews taking notes and tracking how they are doing.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+This project is trying to make one place where you can do all of these things and make it easier to get ready for a job.
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## What We Used To Make It
 
-## What technologies are used for this project?
+**The Part You See**
 
-This project is built with:
+- We used React and TypeScript to make the user interface
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- We used Tailwind CSS to make it look nice
 
-## How can I deploy this project?
+- We used shadcn/ui and Framer Motion to make some effects
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+- We used Electron to make the desktop version
 
-## Can I connect a custom domain to my Lovable project?
+**The Part That Helps You Write Code**
 
-Yes, you can!
+- We used Monaco Editor which is, like the engine that powers Visual Studio Code
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+**The Part That Helps Us Keep Track Of Things (We Are Still Planning)**
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- We are going to use Supabase to keep track of who you're what you have done
+
+- We are going to use artificial intelligence to help with interviews and give you feedback
+
+---
+
+## How The Project Is Going
+
+We are just starting out and are working on the basic user interface and how the program is put together.
+
+---
+
+## Sneak Peek
+
+We will show you what it looks like soon.
+
+---
+
+## Lets Get Started
+
+### What You Need To Begin
+
+- You need to have Node.js on your computer (version 18 or newer is an idea)
+
+- You need to have npm or pnpm or yarn on your computer
+
+### How To Install It
+
+```bash
+
+git clone https://github.com/your-username/ai-student-assistant.git
+
+cd ai-student-assistant
+
+npm install ```
