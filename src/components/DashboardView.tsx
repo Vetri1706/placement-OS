@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import GlassCard from "./GlassCard";
 import { Target, Mic, FileText, Play, BookOpen, TrendingUp } from "lucide-react";
+import { useAppStore } from "@/store/useAppStore";
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -11,12 +12,18 @@ const stagger = {
 };
 
 const DashboardView = () => {
+  const userName = useAppStore((s) => s.userName);
+  const dailyProgress = useAppStore((s) => s.dailyProgress);
+  const studyHours = useAppStore((s) => s.studyHours);
+  const problemsSolved = useAppStore((s) => s.problemsSolved);
+  const interviewSuccessRate = useAppStore((s) => s.interviewSuccessRate);
+
   const goals = [
     { label: "Complete React Module", done: true },
     { label: "Practice 2 Algorithm Problems", done: false },
     { label: "Mock Interview Session", done: false },
   ];
-  const progress = Math.round((goals.filter(g => g.done).length / goals.length) * 100);
+  const progress = Math.max(0, Math.min(100, dailyProgress));
 
   const resources = [
     { title: "React Hooks Deep Dive", type: "video", tag: "#React" },
@@ -31,7 +38,7 @@ const DashboardView = () => {
         <div className="flex items-start justify-between">
           <div>
             <p className="text-muted-foreground text-sm mb-1">Good morning</p>
-            <h2 className="text-2xl font-bold mb-4">Welcome back, <span className="text-gradient-primary">Alex</span></h2>
+            <h2 className="text-2xl font-bold mb-4">Welcome back, <span className="text-gradient-primary">{userName}</span></h2>
             <p className="text-muted-foreground text-sm mb-4">You have {goals.filter(g => !g.done).length} tasks remaining today</p>
             <div className="space-y-2">
               {goals.map((goal, i) => (
@@ -92,9 +99,9 @@ const DashboardView = () => {
 
       {/* Stats Row */}
       {[
-        { icon: Target, label: "Problems Solved", value: "247", change: "+12 this week" },
-        { icon: TrendingUp, label: "Study Hours", value: "86h", change: "+4.5h today" },
-        { icon: BookOpen, label: "Courses Active", value: "5", change: "2 near completion" },
+        { icon: Target, label: "Problems Solved", value: `${problemsSolved}`, change: "Total solved" },
+        { icon: TrendingUp, label: "Study Hours", value: `${studyHours}h`, change: "Total study time" },
+        { icon: BookOpen, label: "Interview Success Rate", value: `${interviewSuccessRate}%`, change: "Recent mock interviews" },
       ].map((stat, i) => (
         <GlassCard key={i} className="col-span-4 p-5" delay={0.2 + i * 0.05}>
           <div className="flex items-center gap-3">

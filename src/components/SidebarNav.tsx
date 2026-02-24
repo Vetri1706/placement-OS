@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { LayoutDashboard, Code2, Mic, BookOpen, Settings, GraduationCap } from "lucide-react";
+import { useAppStore, type View } from "@/store/useAppStore";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", view: "dashboard" },
@@ -7,14 +8,12 @@ const navItems = [
   { icon: Mic, label: "Interview", view: "interview" },
   { icon: BookOpen, label: "Library", view: "library" },
   { icon: Settings, label: "Settings", view: "settings" },
-];
+] as const satisfies ReadonlyArray<{ icon: React.ComponentType<{ className?: string }>; label: string; view: View }>;
 
-interface SidebarNavProps {
-  activeView: string;
-  onViewChange: (view: string) => void;
-}
+const SidebarNav = () => {
+  const activeView = useAppStore((s) => s.view);
+  const setView = useAppStore((s) => s.setView);
 
-const SidebarNav = ({ activeView, onViewChange }: SidebarNavProps) => {
   return (
     <motion.nav
       initial={{ x: -80, opacity: 0 }}
@@ -31,7 +30,7 @@ const SidebarNav = ({ activeView, onViewChange }: SidebarNavProps) => {
         return (
           <motion.button
             key={item.view}
-            onClick={() => onViewChange(item.view)}
+            onClick={() => setView(item.view)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             className={`relative p-3 rounded-xl transition-colors duration-200 group ${
