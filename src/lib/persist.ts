@@ -5,6 +5,15 @@ export interface PersistedStats {
   interviewSuccessRate: number
 }
 
+export interface PersistedProblemProgress {
+  solvedProblemIds: string[]
+  attemptedProblemIds: string[]
+  xpTotal: number
+  level: number
+  streak: number
+  lastSolvedDate: string | null
+}
+
 export async function saveUser(name: string) {
   await window.appStore.set("userName", name)
 }
@@ -31,5 +40,22 @@ export async function loadDashboardStats() {
     studyHours,
     problemsSolved,
     interviewSuccessRate,
+  }
+}
+
+export async function saveProblemProgress(progress: PersistedProblemProgress) {
+  await window.appStore.set("problemProgress", progress)
+}
+
+export async function loadProblemProgress(): Promise<PersistedProblemProgress> {
+  const stored = await window.appStore.get("problemProgress")
+
+  return {
+    solvedProblemIds: Array.isArray(stored?.solvedProblemIds) ? stored.solvedProblemIds : [],
+    attemptedProblemIds: Array.isArray(stored?.attemptedProblemIds) ? stored.attemptedProblemIds : [],
+    xpTotal: typeof stored?.xpTotal === "number" ? stored.xpTotal : 0,
+    level: typeof stored?.level === "number" ? stored.level : 1,
+    streak: typeof stored?.streak === "number" ? stored.streak : 0,
+    lastSolvedDate: typeof stored?.lastSolvedDate === "string" ? stored.lastSolvedDate : null,
   }
 }

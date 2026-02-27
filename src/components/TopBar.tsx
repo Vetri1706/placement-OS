@@ -1,9 +1,12 @@
 import { motion } from "framer-motion";
 import { Flame, Bell, Search, User } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useAppStore } from "@/store/useAppStore";
 
 const TopBar = () => {
-  const streak = 12;
+  const streak = useAppStore((s) => s.streak);
+  const userName = useAppStore((s) => s.userName);
+  const setView = useAppStore((s) => s.setView);
 
   return (
     <motion.header
@@ -12,18 +15,7 @@ const TopBar = () => {
       transition={{ duration: 0.5, delay: 0.2 }}
       className="flex items-center justify-between px-6 py-4"
     >
-      {/* LEFT — SEARCH */}
-      <div className="flex items-center gap-4">
-        <div className="relative">
-          <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder="Search What You Need..."
-            className="glass rounded-lg pl-10 pr-4 py-2 text-sm bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 w-64"
-          />
-        </div>
-      </div>
-
+      
       {/* RIGHT — ACTIONS */}
       <div className="flex items-center gap-5">
 
@@ -31,6 +23,7 @@ const TopBar = () => {
         <motion.div
           whileHover={{ scale: 1.05 }}
           className="flex items-center gap-2 glass rounded-full px-4 py-2"
+          onClick={() => setView("problems")}
         >
           <div className="relative">
             <svg className="w-8 h-8 -rotate-90" viewBox="0 0 36 36">
@@ -62,6 +55,7 @@ const TopBar = () => {
         <motion.button
           whileHover={{ scale: 1.1 }}
           className="relative p-2 text-muted-foreground hover:text-foreground transition-colors"
+          //onClick={() => setView("notification")}
         >
           <Bell className="w-5 h-5" />
           <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary animate-pulse" />
@@ -79,12 +73,13 @@ const TopBar = () => {
         <motion.div
           whileHover={{ scale: 1.05 }}
           className="flex items-center gap-3 glass rounded-full pl-1 pr-4 py-1 cursor-pointer"
+          onClick={() => setView("settings")}
         >
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
             <User className="w-4 h-4 text-primary-foreground" />
           </div>
 
-          <span className="text-sm font-medium">Alex</span>
+          <span className="text-sm font-medium">{userName}</span>
         </motion.div>
 
       </div>

@@ -17,6 +17,9 @@ const DashboardView = () => {
   const studyHours = useAppStore((s) => s.studyHours);
   const problemsSolved = useAppStore((s) => s.problemsSolved);
   const interviewSuccessRate = useAppStore((s) => s.interviewSuccessRate);
+  const xpTotal = useAppStore((s) => s.xpTotal);
+  const level = useAppStore((s) => s.level);
+  const streak = useAppStore((s) => s.streak);
 
   const goals = [
     { label: "Complete React Module", done: true },
@@ -100,6 +103,8 @@ const DashboardView = () => {
       {/* Stats Row */}
       {[
         { icon: Target, label: "Problems Solved", value: `${problemsSolved}`, change: "Total solved" },
+        { icon: TrendingUp, label: "XP", value: `${xpTotal}`, change: `Level ${level}` },
+        { icon: Mic, label: "Streak", value: `${streak}d`, change: "Consecutive solve days" },
         { icon: TrendingUp, label: "Study Hours", value: `${studyHours}h`, change: "Total study time" },
         { icon: BookOpen, label: "Interview Success Rate", value: `${interviewSuccessRate}%`, change: "Recent mock interviews" },
       ].map((stat, i) => (
@@ -110,10 +115,10 @@ const DashboardView = () => {
             </div>
             <div>
               <p className="text-2xl font-bold">{stat.value}</p>
-              <p className="text-xs text-muted-foreground">{stat.label}</p>
+              <p className="text-sm text-foreground/70">{stat.label}</p>
             </div>
           </div>
-          <p className="text-xs text-accent mt-3">{stat.change}</p>
+          <p className="text-sm text-accent mt-3">{stat.change}</p>
         </GlassCard>
       ))}
 
@@ -131,7 +136,7 @@ const DashboardView = () => {
                 {res.type === "video" ? <Play className="w-4 h-4 text-primary" /> : <FileText className="w-4 h-4 text-secondary" />}
                 <span className="text-sm font-medium">{res.title}</span>
               </div>
-              <span className="text-xs text-primary/70">{res.tag}</span>
+              <span className="text-sm text-primary">{res.tag}</span>
             </motion.div>
           ))}
         </div>

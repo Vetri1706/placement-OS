@@ -23,7 +23,7 @@
     --secondary-foreground: 210 40% 98%;
 
     --muted: 225 15% 15%;
-    --muted-foreground: 215 20% 55%;
+    --muted-foreground: 215 20% 70%;
 
     --accent: 170 80% 50%;
     --accent-foreground: 225 30% 6%;
@@ -56,12 +56,12 @@
     --editor-float-c: 170 75% 54%;
 
     /* Custom tokens */
-    --glass-bg: 225 20% 100% / 0.05;
-    --glass-border: 0 0% 100% / 0.1;
-    --glass-border-subtle: 0 0% 100% / 0.05;
+    --glass-bg: 225 20% 12% / 0.6;
+    --glass-border: 225 16% 18% / 0.75;
+    --glass-border-subtle: 225 16% 18% / 0.45;
     --glass-strong-bg: 225 20% 12% / 0.6;
-    --glass-inner-highlight: 0 0% 100% / 0.08;
-    --glass-shadow: 225 30% 0% / 0.4;
+    --glass-inner-highlight: 0 0% 100% / 0.06;
+    --glass-shadow: 225 30% 0% / 0.32;
     --glass-saturate: 140%;
     --glass-shine: 0 0% 100%;
     --glow-primary: 200 100% 55%;
@@ -119,7 +119,7 @@
     --secondary-foreground: 0 0% 100%;
 
     --muted: 220 20% 93%;
-    --muted-foreground: 220 12% 38%;
+    --muted-foreground: 220 12% 50%;
 
     --accent: 170 70% 42%;
     --accent-foreground: 0 0% 100%;
@@ -203,35 +203,35 @@
 
 @layer components {
   .glass {
-    @apply backdrop-blur-2xl border rounded-xl;
+    @apply border rounded-xl;
     position: relative;
-    overflow: hidden;
-    background: linear-gradient(135deg, hsl(var(--glass-bg)), hsl(var(--glass-bg)));
+    background: hsl(var(--glass-bg));
     border-color: hsl(var(--glass-border));
-    -webkit-backdrop-filter: blur(26px) saturate(var(--glass-saturate));
-    backdrop-filter: blur(26px) saturate(var(--glass-saturate));
-    box-shadow: inset 0 1px 0 hsl(var(--glass-inner-highlight)), 0 18px 50px hsl(var(--glass-shadow));
+    -webkit-backdrop-filter: blur(16px) saturate(var(--glass-saturate));
+    backdrop-filter: blur(16px) saturate(var(--glass-saturate));
+    box-shadow: inset 0 1px 0 hsl(var(--glass-inner-highlight)), 0 8px 24px hsl(var(--glass-shadow));
   }
 
   .glass::before {
     content: "";
     position: absolute;
     inset: 0;
+    border-radius: inherit;
     pointer-events: none;
-    background: linear-gradient(120deg, hsl(var(--glass-shine) / 0.35) 0%, transparent 45%, transparent 60%, hsl(var(--glass-shine) / 0.2) 100%);
+    background: linear-gradient(120deg, hsl(var(--glass-shine) / 0.18) 0%, transparent 45%, transparent 60%, hsl(var(--glass-shine) / 0.12) 100%);
   }
 
   .light .glass::before {
-    background: linear-gradient(120deg, hsl(var(--glass-shine) / 0.62) 0%, transparent 45%, transparent 62%, hsl(var(--glass-shine) / 0.28) 100%);
+    background: linear-gradient(120deg, hsl(var(--glass-shine) / 0.22) 0%, transparent 45%, transparent 62%, hsl(var(--glass-shine) / 0.16) 100%);
   }
 
   .glass-strong {
-    @apply backdrop-blur-2xl border rounded-xl;
+    @apply border rounded-xl;
     background: hsl(var(--glass-strong-bg));
     border-color: hsl(var(--glass-border));
-    -webkit-backdrop-filter: blur(30px) saturate(var(--glass-saturate));
-    backdrop-filter: blur(30px) saturate(var(--glass-saturate));
-    box-shadow: inset 0 1px 0 hsl(var(--glass-inner-highlight)), 0 22px 60px hsl(var(--glass-shadow));
+    -webkit-backdrop-filter: blur(18px) saturate(var(--glass-saturate));
+    backdrop-filter: blur(18px) saturate(var(--glass-saturate));
+    box-shadow: inset 0 1px 0 hsl(var(--glass-inner-highlight)), 0 10px 30px hsl(var(--glass-shadow));
   }
 
   .editor-surface {
@@ -351,14 +351,14 @@
 
   .neon-button {
     @apply relative overflow-hidden;
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--glow-secondary)));
-    box-shadow: 0 0 20px hsl(var(--primary) / 0.4), 0 0 60px hsl(var(--primary) / 0.15);
-    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary)));
+    box-shadow: 0 6px 18px hsl(var(--primary) / 0.18);
+    transition: box-shadow 0.25s ease, transform 0.2s ease;
   }
 
   .neon-button:hover {
-    box-shadow: 0 0 30px hsl(var(--primary) / 0.6), 0 0 80px hsl(var(--primary) / 0.25);
-    transform: scale(1.02);
+    box-shadow: 0 10px 26px hsl(var(--primary) / 0.22);
+    transform: translateY(-1px);
   }
 }
 

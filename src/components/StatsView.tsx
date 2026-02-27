@@ -35,7 +35,7 @@ const StatsView = () => {
           <GlassCard key={i} className="p-5" delay={i * 0.05}>
             <stat.icon className="w-5 h-5 mb-3" style={{ color: stat.color }} />
             <p className="text-2xl font-bold">{stat.value}</p>
-            <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
+            <p className="text-sm text-foreground/70 mt-1">{stat.label}</p>
           </GlassCard>
         ))}
       </div>

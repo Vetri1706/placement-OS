@@ -6,7 +6,7 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import LandingPage from "@/components/LandingPage";
-import ThemeToggle from "@/components/ThemeToggle.tsx";
+import ProblemDetailPage from "@/pages/ProblemDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +23,7 @@ const App = () => (
             <Route index element={<LandingPage />} />
             <Route path="/" element={<LandingPage />} />
             <Route path="/app" element={<Index />} />
+            <Route path="/problem/:id" element={<ProblemDetailPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </HashRouter>
