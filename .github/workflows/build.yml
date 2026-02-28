@@ -22,11 +22,8 @@ jobs:
         with:
           node-version: 20
 
-      - name: Remove lockfile
-        run: node -e "require('fs').rmSync('package-lock.json', {force:true})"
-
       - name: Install deps
-        run: npm install
+        run: npm install --force
 
       - name: Build app
         run: npm run build
