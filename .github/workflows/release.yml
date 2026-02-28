@@ -22,9 +22,11 @@ jobs:
 
       - run: npm install --force
       - run: npm run build
-      - run: npm run dist
+      - run: npm run dist -- --publish never
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
-          files: release/**
+          files: release/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
