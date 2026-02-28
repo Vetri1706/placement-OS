@@ -77,34 +77,54 @@
     "zustand": "^5.0.11"
   },
   "build": {
-    "appId": "com.tarnishedcoders.placementos",
-    "productName": "Placement OS",
-    "icon": "build/icon",
-    "files": [
-      "dist/**/*",
-      "main.cjs",
-      "preload.cjs",
-      "package.json"
-    ],
-    "directories": {
-      "buildResources": "build",
-      "output": "release"
-    },
-    "linux": {
-      "target": ["AppImage", "tar.gz"],
-      "category": "Development",
-      "icon": "build/icon.png"
-    },
-    "win": {
-      "target": ["nsis"],
-      "artifactName": "PlacementOS-Setup-${version}.exe"
+  "appId": "com.tarnishedcoders.placementos",
+  "productName": "Placement OS",
+  "icon": "build/icon",
 
-    },
-    "mac": {
-      "target": ["zip", "dir"],
-      "artifactName": "PlacementOS-${version}-mac.${ext}"
+  "files": [
+    "dist/**/*",
+    "main.cjs",
+    "preload.cjs",
+    "package.json",
+    "scripts/**/*"          
+  ],
+
+  "asar": true,
+
+  "asarUnpack": [
+    "scripts/**"            
+  ],
+
+  "extraResources": [
+    {
+      "from": "scripts/",
+      "to": "scripts/"
     }
+  ],
+
+  "directories": {
+    "buildResources": "build",
+    "output": "release"
   },
+
+  "linux": {
+    "target": ["AppImage", "tar.gz"],
+    "category": "Development",
+    "icon": "build/icon.png"
+  },
+
+  "win": {
+    "target": ["nsis"],
+    "artifactName": "PlacementOS-Setup-${version}.exe"
+  },
+
+  "mac": {
+    "target": ["zip", "dir"],
+    "artifactName": "PlacementOS-${version}-mac.${ext}"
+  }
+},
+
+
   "devDependencies": {
     "@eslint/js": "^9.32.0",
     "@rollup/rollup-linux-x64-gnu": "^4.59.0",
