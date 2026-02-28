@@ -27,6 +27,13 @@ jobs:
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
-          files: release/*
+          files: |
+            release/*.exe
+            release/*.AppImage
+            release/*.tar.gz
+            release/*.zip
+            release/*.dmg
+            release/*.deb
+            release/*.rpm
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
