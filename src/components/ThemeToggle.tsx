@@ -18,7 +18,13 @@ export default function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
-    const saved = localStorage.getItem(THEME_KEY);
+    let saved: unknown;
+    try {
+      saved = window.appStore?.get?.(THEME_KEY);
+    } catch {
+      saved = undefined;
+    }
+
     const initialTheme: Theme = saved === "light" || saved === "dark" ? saved : getSystemTheme();
 
     applyTheme(initialTheme);
@@ -45,7 +51,11 @@ export default function ThemeToggle() {
   const toggleTheme = () => {
     const nextTheme: Theme = theme === "dark" ? "light" : "dark";
     applyTheme(nextTheme);
-    localStorage.setItem(THEME_KEY, nextTheme);
+    try {
+      window.appStore?.set?.(THEME_KEY, nextTheme);
+    } catch {
+      /* ignore */
+    }
     setTheme(nextTheme);
   };
 

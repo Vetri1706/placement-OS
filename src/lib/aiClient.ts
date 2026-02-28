@@ -1,13 +1,26 @@
 const OLLAMA_BASE = "http://localhost:11434";
-const MODEL = "qwen2.5-coder:7b";
+export const REQUIRED_MODEL = "qwen2.5-coder:7b";
+const MODEL = REQUIRED_MODEL;
+
+export type OllamaTags = {
+  models: Array<{ name: string }>
+};
+
+export async function getOllamaTags(): Promise<OllamaTags> {
+  const res = await fetch(`${OLLAMA_BASE}/api/tags`, { signal: AbortSignal.timeout(3000) });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Ollama tags failed (${res.status}): ${text}`);
+  }
+  const data = (await res.json()) as Partial<OllamaTags>;
+  return { models: Array.isArray(data.models) ? data.models : [] };
+}
 
 /* ─── health ─────────────────────────────────────────────── */
 export async function checkOllamaHealth(): Promise<boolean> {
   try {
-    const res = await fetch(`${OLLAMA_BASE}/api/tags`, { signal: AbortSignal.timeout(3000) });
-    if (!res.ok) return false;
-    const data = await res.json();
-    return Array.isArray(data.models) && data.models.some((m: { name: string }) => m.name.startsWith("qwen2.5-coder"));
+    const data = await getOllamaTags();
+    return Array.isArray(data.models) && data.models.some((m) => m.name === REQUIRED_MODEL || m.name.startsWith("qwen2.5-coder"));
   } catch {
     return false;
   }

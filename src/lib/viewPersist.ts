@@ -21,12 +21,6 @@ export function saveLastView(view: View) {
       return
     }
   } catch {
-    // ignore and fall back
-  }
-
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
-  } catch {
     // ignore
   }
 }
@@ -38,17 +32,6 @@ export function loadLastView(): LastView | null {
       if (v && typeof v === "object" && typeof v.view === "string") {
         return v as LastView
       }
-    }
-  } catch {
-    // ignore and fall back
-  }
-
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
-    const parsed = JSON.parse(raw)
-    if (parsed && typeof parsed === "object" && typeof parsed.view === "string") {
-      return parsed as LastView
     }
   } catch {
     // ignore

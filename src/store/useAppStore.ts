@@ -9,6 +9,7 @@ export type View =
   | "problems"
   | "interview"
   | "library"
+  | "setupChecker"
   | "settings"
   | "resume"
   | "roadmap"

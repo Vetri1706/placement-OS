@@ -24,9 +24,7 @@ const emptyState = (): ResourceLibraryState => ({
   aiById: {},
 });
 
-function hasElectronStore(): boolean {
-  return typeof window !== "undefined" && typeof window.appStore?.get === "function" && typeof window.appStore?.set === "function";
-}
+let memoryState: ResourceLibraryState | null = null;
 
 function safeJsonParse<T>(raw: unknown): T | null {
   try {
@@ -40,32 +38,22 @@ function safeJsonParse<T>(raw: unknown): T | null {
 
 export async function loadResourceLibraryState(): Promise<ResourceLibraryState> {
   try {
-    if (hasElectronStore()) {
-      const stored = await window.appStore.get(STORAGE_KEY);
-      const parsed = safeJsonParse<ResourceLibraryState>(stored);
-      if (parsed?.version === 1) return parsed;
-      return emptyState();
-    }
-
-    const raw = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
-    const parsed = safeJsonParse<ResourceLibraryState>(raw);
+    const stored = typeof window !== "undefined" ? await window.appStore?.get?.(STORAGE_KEY) : null;
+    const parsed = safeJsonParse<ResourceLibraryState>(stored);
     if (parsed?.version === 1) return parsed;
-    return emptyState();
   } catch {
-    return emptyState();
+    // ignore
   }
+
+  if (memoryState?.version === 1) return memoryState;
+  return emptyState();
 }
 
 export async function saveResourceLibraryState(state: ResourceLibraryState): Promise<void> {
+  memoryState = state;
   try {
-    if (hasElectronStore()) {
-      await window.appStore.set(STORAGE_KEY, state);
-      return;
-    }
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
+    await window.appStore?.set?.(STORAGE_KEY, state);
   } catch {
-    // ignore persistence failures
+    // ignore
   }
 }

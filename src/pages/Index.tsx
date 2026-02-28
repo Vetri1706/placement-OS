@@ -11,9 +11,11 @@ import ResourcesLibraryView from "@/components/ResourcesLibraryView";
 import SettingsView from "@/components/SettingsView";
 import ResumeAnalyzerView from "@/components/ResumeAnalyzerView";
 import RoadmapView from "@/components/RoadmapView";
+import SetupCheckerView from "@/components/SetupCheckerView";
 import { loadDashboardStats, loadProblemProgress, loadUser, saveDashboardStats, saveProblemProgress, saveUser } from "@/lib/persist";
 import { useAppStore } from "@/store/useAppStore";
 import ResumeAnalyzer from "@/features/resume/ResumeAnalyzer";
+import { checkOllamaHealth } from "@/lib/aiClient";
 
 const views: Record<string, React.ComponentType> = {
   dashboard: DashboardView,
@@ -21,6 +23,7 @@ const views: Record<string, React.ComponentType> = {
   problems: ProblemsPage,
   interview: AIInterviewView,
   library: ResourcesLibraryView,
+  setupChecker: SetupCheckerView,
   resume: ResumeAnalyzerView,
   roadmap: RoadmapView,
   settings: SettingsView,
@@ -28,6 +31,7 @@ const views: Record<string, React.ComponentType> = {
 
 const Index = () => {
   const activeView = useAppStore((s) => s.view);
+  const setView = useAppStore((s) => s.setView);
   const userName = useAppStore((s) => s.userName);
   const setUserName = useAppStore((s) => s.setUserName);
   const dailyProgress = useAppStore((s) => s.dailyProgress);
@@ -47,18 +51,33 @@ const Index = () => {
   const hydrateProblemProgress = useAppStore((s) => s.hydrateProblemProgress);
 
   useEffect(() => {
+    // Setup checker auto-detection (session-only).
+    // If local AI runtime isn't ready, guide the user before they hit AI features.
+    ;(async () => {
+      try {
+        const dismissed = !!window.appStore?.get?.("placementOs:setupDismissed");
+        if (dismissed) return;
+
+        const ok = await checkOllamaHealth();
+        if (!ok) setView("setupChecker");
+      } catch {
+        // ignore
+      }
+    })();
+
     loadUser().then((name) => {
       if (name) {
         setUserName(name);
       } else {
-        // Fallback: sync from settings localStorage
+        // Fallback: sync from in-session profile
         try {
-          const settings = localStorage.getItem("ai-interview-coach/profile-settings");
-          if (settings) {
-            const parsed = JSON.parse(settings);
-            if (parsed.name) setUserName(parsed.name);
+          const settings = window.appStore?.get?.("ai-interview-coach/profile-settings");
+          if (settings && typeof settings === "object" && (settings as any).name) {
+            setUserName(String((settings as any).name));
           }
-        } catch { /* ignore */ }
+        } catch {
+          /* ignore */
+        }
       }
     });
 

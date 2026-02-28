@@ -71,7 +71,7 @@ const LandingPage = () => {
         <motion.section initial="hidden" animate="visible" variants={sectionVariants}>
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h1 className="text-xl font-semibold tracking-tight md:text-2xl">AI Student Assistant</h1>
+              <h1 className="text-xl font-semibold tracking-tight md:text-2xl">Placement OS</h1>
               <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">Start where you left off, or jump into a module.</p>
             </div>
             <ThemeToggle />

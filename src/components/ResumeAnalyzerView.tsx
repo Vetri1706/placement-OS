@@ -28,21 +28,27 @@ const ResumeAnalyzerView = () => {
     checkOllamaHealth().then(setOllamaOnline);
   }, []);
 
-  // Load/save profile from localStorage
+  // Load/save profile in session only (no disk persistence)
   useEffect(() => {
-    const saved = localStorage.getItem(storageKey);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as Partial<ProfileSettings>;
+    try {
+      const saved = window.appStore?.get?.(storageKey);
+      if (saved && typeof saved === "object") {
+        const parsed = saved as Partial<ProfileSettings>;
         setProfile((prev) => ({ ...prev, ...parsed }));
-      } catch {
-        /* ignore */
       }
+    } catch {
+      /* ignore */
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify({ ...profile }));
+    try {
+      const existing = window.appStore?.get?.(storageKey);
+      const base = existing && typeof existing === "object" ? existing : {};
+      window.appStore?.set?.(storageKey, { ...(base as any), ...profile });
+    } catch {
+      /* ignore */
+    }
   }, [profile]);
 
   const handleChange = (key: keyof ProfileSettings) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -66,8 +72,12 @@ const ResumeAnalyzerView = () => {
       const parsed = parseResumeResult(raw);
       if (parsed) {
         setAnalysisResult(parsed);
-        // Persist for roadmap generation
-        localStorage.setItem("ai-interview-coach/resume-analysis", JSON.stringify(parsed));
+        // Keep for roadmap generation in-session only
+        try {
+          window.appStore?.set?.("ai-interview-coach/resume-analysis", parsed);
+        } catch {
+          /* ignore */
+        }
       } else {
         // If parsing fails, still show the raw output
         setError("Could not parse structured result. Showing raw AI output below.");

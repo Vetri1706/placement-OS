@@ -41,9 +41,11 @@ const RoadmapView = () => {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem("ai-interview-coach/resume-analysis");
-      if (stored) setResumeAnalysis(JSON.parse(stored));
-    } catch { /* ignore */ }
+      const stored = window.appStore?.get?.("ai-interview-coach/resume-analysis");
+      if (stored && typeof stored === "object") setResumeAnalysis(stored as ResumeAnalysisResult);
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   const plan = useMemo(() => generatePlan(Number(selectedTrack), focus), [selectedTrack, focus]);

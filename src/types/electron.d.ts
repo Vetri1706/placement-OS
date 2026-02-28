@@ -1,5 +1,27 @@
 export {}
 
+// ── system:checkAll return type ──────────────────────────────────────────────
+
+export interface SystemCheckResult {
+  ollamaReachable: boolean
+  modelInstalled: boolean
+  models: string[]
+  diskFreeGb: number | null
+  diskOk: boolean
+  ttsEngine: string | null
+  whisperAvailable: boolean
+  gpuInfo: string | null
+  platform: string
+}
+
+export interface PullProgressEvent {
+  status: string
+  completed?: number | null
+  total?: number | null
+  digest?: string | null
+  done?: boolean
+}
+
 declare global {
   interface Window {
     appStore: {
@@ -34,6 +56,14 @@ declare global {
     resume: {
       pickPdf: () => Promise<{ canceled: boolean; filePath?: string | null }>
       extractPdfText: (args: { filePath: string }) => Promise<{ ok: boolean; text?: string; stderr?: string }>
+    }
+
+    systemCheck: {
+      checkAll: () => Promise<SystemCheckResult>
+      startOllama: () => Promise<{ ok: boolean; method?: string; stderr?: string }>
+      pullModel: (model: string) => Promise<{ ok: boolean; stderr?: string }>
+      onPullProgress: (cb: (data: PullProgressEvent) => void) => void
+      offPullProgress: () => void
     }
   }
 }

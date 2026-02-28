@@ -39,22 +39,25 @@ const SettingsView = () => {
   const setUserName = useAppStore((s) => s.setUserName);
 
   useEffect(() => {
-    const saved = localStorage.getItem(storageKey);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as ProfileSettings;
-        const merged = { ...defaultProfile, ...parsed };
+    try {
+      const saved = window.appStore?.get?.(storageKey);
+      if (saved && typeof saved === "object") {
+        const merged = { ...defaultProfile, ...(saved as Partial<ProfileSettings>) };
         setProfile(merged);
         // Sync name to global store so TopBar shows it
         if (merged.name) setUserName(merged.name);
-      } catch {
-        /* ignore parse errors */
       }
+    } catch {
+      /* ignore */
     }
   }, [setUserName]);
 
   useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(profile));
+    try {
+      window.appStore?.set?.(storageKey, profile);
+    } catch {
+      /* ignore */
+    }
   }, [profile]);
 
   const handleChange = (key: keyof ProfileSettings) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

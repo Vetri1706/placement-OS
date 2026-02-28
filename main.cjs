@@ -3,10 +3,30 @@ const path = require("path")
 const fs = require("fs")
 const os = require("os")
 const { spawn } = require("child_process")
-const ElectronStore = require("electron-store")
-const Store = ElectronStore.default ?? ElectronStore
 
-Store.initRenderer()
+/**
+ * Returns a copy of process.env with PATH augmented by common locations where
+ * Ollama (and other tools) are installed. Electron's sandboxed PATH is often
+ * missing /usr/local/bin and ~/.local/bin on Linux/macOS.
+ */
+function getExpandedEnv() {
+  const extraPaths = [
+    path.join(os.homedir(), ".local", "bin"),
+    "/usr/local/bin",
+    "/usr/bin",
+    "/bin",
+    "/opt/homebrew/bin",         // macOS Homebrew (Apple Silicon)
+    "/usr/local/homebrew/bin",   // macOS Homebrew (Intel)
+  ]
+  const current = process.env.PATH || ""
+  const merged = [...new Set([...current.split(path.delimiter), ...extraPaths])]
+    .filter(Boolean)
+    .join(path.delimiter)
+  return { ...process.env, PATH: merged }
+}
+
+// Single reference to the main window — used for webContents.send streaming
+let mainWindow = null
 
 // On Linux, Chromium speech synthesis (speechSynthesis) is commonly gated behind
 // speech-dispatcher. This switch helps enable it when available.
@@ -758,8 +778,189 @@ ipcMain.handle("resume:extractPdfText", async (_event, payload) => {
   return { ok: true, text: res.text }
 })
 
+// ─────────────────────────────────────────────────────────────────
+// System Health Check IPC handlers
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * system:checkAll — runs every environment check and returns a status object.
+ * Pure query, no side-effects.
+ */
+ipcMain.handle("system:checkAll", async () => {
+  // ── 1. Ollama reachability + model list ──────────────────────
+  let ollamaReachable = false
+  let modelInstalled = false
+  let models = []
+
+  try {
+    const res = await fetch("http://localhost:11434/api/tags", {
+      signal: AbortSignal.timeout(3500),
+    })
+    if (res.ok) {
+      ollamaReachable = true
+      const data = await res.json()
+      models = (data.models || []).map((m) => m.name)
+      modelInstalled = models.some(
+        (n) => n === "qwen2.5-coder:7b" || n.startsWith("qwen2.5-coder")
+      )
+    }
+  } catch {
+    ollamaReachable = false
+  }
+
+  // ── 2. Disk space ────────────────────────────────────────────
+  let diskFreeGb = null
+  let diskOk = true
+  try {
+    const dfArgs = process.platform === "win32"
+      ? ["logicaldisk", "get", "freespace"]
+      : ["-Pk", "/"]
+    const dfCmd = process.platform === "win32" ? "wmic" : "df"
+    const dfResult = await runCommand(dfCmd, dfArgs, { timeoutMs: 5000 })
+    if (dfResult.ok) {
+      const lines = dfResult.stdout.trim().split("\n").filter(Boolean)
+      const last = lines[lines.length - 1].trim().split(/\s+/)
+      // df -Pk output: Filesystem 1024-blocks Used Available Capacity Mounted
+      const availKb = parseInt(last[3], 10)
+      if (!isNaN(availKb)) {
+        diskFreeGb = availKb / (1024 * 1024)
+        diskOk = diskFreeGb > 5
+      }
+    }
+  } catch {
+    diskFreeGb = null
+    diskOk = true // don't block on check failure
+  }
+
+  // ── 3. Native TTS ─────────────────────────────────────────────
+  let ttsEngine = null
+  const ttsOptions = process.platform === "darwin"
+    ? ["say"]
+    : process.platform === "win32"
+      ? ["powershell"]
+      : ["piper", "spd-say", "espeak-ng", "espeak"]
+  for (const bin of ttsOptions) {
+    const r = await runCommand("which", [bin], { timeoutMs: 2000 })
+    if (r.ok) { ttsEngine = bin; break }
+  }
+  // Windows always has TTS via PowerShell
+  if (process.platform === "win32") ttsEngine = "powershell"
+  if (process.platform === "darwin") ttsEngine = "say"
+
+  // ── 4. Whisper STT ────────────────────────────────────────────
+  let whisperAvailable = false
+  for (const cmd of ["whisper", "whisper-ctranslate2", "whisper_cpp"]) {
+    const r = await runCommand("which", [cmd], { timeoutMs: 2000 })
+    if (r.ok) { whisperAvailable = true; break }
+  }
+
+  // ── 5. GPU ────────────────────────────────────────────────────
+  let gpuInfo = null
+  if (process.platform === "linux") {
+    const r = await runCommand("which", ["nvidia-smi"], { timeoutMs: 2000 })
+    if (r.ok) {
+      const smi = await runCommand("nvidia-smi", ["--query-gpu=name", "--format=csv,noheader"], { timeoutMs: 4000 })
+      if (smi.ok) gpuInfo = smi.stdout.trim().split("\n")[0] || "NVIDIA GPU"
+    }
+  }
+
+  return {
+    ollamaReachable,
+    modelInstalled,
+    models,
+    diskFreeGb,
+    diskOk,
+    ttsEngine,
+    whisperAvailable,
+    gpuInfo,
+    platform: process.platform,
+  }
+})
+
+/**
+ * system:startOllama — attempts to start the Ollama daemon.
+ */
+ipcMain.handle("system:startOllama", async () => {
+  // Try systemd on Linux first
+  if (process.platform === "linux") {
+    const r = await runCommand("systemctl", ["--user", "start", "ollama"], { timeoutMs: 8000 })
+    if (r.ok) {
+      await new Promise((res) => setTimeout(res, 1500))
+      return { ok: true, method: "systemctl" }
+    }
+  }
+
+  // Fallback: spawn `ollama serve` detached
+  try {
+    const child = spawn("ollama", ["serve"], {
+      detached: true,
+      stdio: "ignore",
+      env: getExpandedEnv(),
+    })
+    child.unref()
+    // Give it 2.5 seconds to start
+    await new Promise((res) => setTimeout(res, 2500))
+    // Confirm it's responding
+    const check = await fetch("http://localhost:11434", { signal: AbortSignal.timeout(3000) }).catch(() => null)
+    return { ok: !!check?.ok, method: "serve" }
+  } catch (e) {
+    return { ok: false, stderr: String(e) }
+  }
+})
+
+/**
+ * system:pullModel — pulls an Ollama model, streaming JSON progress lines back
+ * via webContents.send("system:pullProgress", { status, completed, total }).
+ */
+ipcMain.handle("system:pullModel", async (_event, payload) => {
+  const modelName = String(payload?.model || "qwen2.5-coder:7b")
+
+  return new Promise((resolve) => {
+    const child = spawn("ollama", ["pull", modelName], { stdio: "pipe", env: getExpandedEnv() })
+    let stderr = ""
+
+    const sendProgress = (data) => {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send("system:pullProgress", data)
+      }
+    }
+
+    child.stdout.on("data", (chunk) => {
+      const lines = chunk.toString().split("\n").filter(Boolean)
+      for (const line of lines) {
+        try {
+          const parsed = JSON.parse(line)
+          sendProgress({
+            status: parsed.status,
+            completed: parsed.completed,
+            total: parsed.total,
+            digest: parsed.digest,
+          })
+        } catch {
+          // plain text line from older ollama versions
+          sendProgress({ status: line, completed: null, total: null })
+        }
+      }
+    })
+
+    child.stderr.on("data", (d) => { stderr += d.toString() })
+
+    child.on("close", (code) => {
+      sendProgress({ status: code === 0 ? "Pull complete" : "Pull failed", done: true })
+      resolve({ ok: code === 0, stderr })
+    })
+
+    child.on("error", (err) => {
+      sendProgress({ status: `Error: ${err.message}`, done: true })
+      resolve({ ok: false, stderr: String(err) })
+    })
+  })
+})
+
+// ─────────────────────────────────────────────────────────────────
+
 function createWindow() {
-  const win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
 
@@ -777,7 +978,7 @@ function createWindow() {
   // Allow microphone access for speech-to-text in the AI Interviewer.
   // Deny everything else by default.
   try {
-    win.webContents.session.setPermissionRequestHandler((_webContents, permission, callback) => {
+    mainWindow.webContents.session.setPermissionRequestHandler((_webContents, permission, callback) => {
       if (permission === "media" || permission === "microphone" || permission === "audioCapture") {
         callback(true)
         return
@@ -788,17 +989,25 @@ function createWindow() {
     // ignore
   }
 
-  // ⭐ Load built React app
-  const indexPath = path.join(__dirname, "dist", "index.html")
-
-  console.log("Loading:", indexPath)
-
-  win.loadFile(indexPath)
-
-  // DevTools (opt-in)
-  if (process.env.PLACEMENT_OS_DEVTOOLS === "1") {
-    win.webContents.openDevTools()
+  // ⭐ Load built React app (or Vite dev server when ELECTRON_DEV_URL is set)
+  const devUrl = process.env.ELECTRON_DEV_URL
+  if (devUrl) {
+    console.log("Loading dev URL:", devUrl)
+    mainWindow.loadURL(devUrl)
+    // Auto-open DevTools in dev mode
+    mainWindow.webContents.openDevTools()
+  } else {
+    const indexPath = path.join(__dirname, "dist", "index.html")
+    console.log("Loading:", indexPath)
+    mainWindow.loadFile(indexPath)
   }
+
+  // DevTools (opt-in in prod)
+  if (!devUrl && process.env.PLACEMENT_OS_DEVTOOLS === "1") {
+    mainWindow.webContents.openDevTools()
+  }
+
+  mainWindow.on("closed", () => { mainWindow = null })
 }
 
 app.whenReady().then(createWindow)

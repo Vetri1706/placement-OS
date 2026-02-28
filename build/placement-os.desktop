@@ -1,0 +1,11 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=Placement OS
+Comment=Offline AI-powered placement preparation with coding IDE, AI interviews, resume analyzer and roadmap planner
+Exec=@EXEC@
+Icon=placement-os
+Terminal=false
+Type=Application
+Categories=Development;Education;
+StartupWMClass=placement-os
+Keywords=placement;interview;coding;AI;resume;
