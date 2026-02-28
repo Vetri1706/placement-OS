@@ -20,6 +20,9 @@ jobs:
         with:
           node-version: 20
 
+      - name: Remove lockfile
+        run: node -e "require('fs').rmSync('package-lock.json', {force:true})"
+
       - run: npm install
       - run: npm run build
       - run: npm run dist
