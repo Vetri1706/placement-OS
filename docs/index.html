@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com">
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Placement OS — AI Placement Preparation Platform</title>
+<meta name="description" content="Offline AI-powered placement preparation app with coding IDE, interviews, resume analyzer, and roadmap planner." />
+
+<style>
+:root{
+  --bg:#f6f1e8;
+  --ink:#153b33;
+  --muted:rgba(21,59,51,.7);
+  --card:rgba(255,255,255,.65);
+  --border:rgba(21,59,51,.12);
+  --cta:#ff6b57;
+  --shadow:0 20px 60px rgba(0,0,0,.12);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,system-ui;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255,107,87,.18), transparent 50%),
+    radial-gradient(circle at 80% 0%, rgba(21,59,51,.12), transparent 48%),
+    var(--bg);
+}
+
+.wrap{max-width:1100px;margin:auto;padding:24px}
+
+h1{font-size:54px;margin:12px 0;letter-spacing:-.04em}
+h2{font-size:28px;margin:0}
+p{line-height:1.6;color:var(--muted)}
+
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px;border-radius:14px;
+  background:rgba(255,255,255,.6);
+  backdrop-filter:blur(10px);
+  border:1px solid var(--border);
+}
+
+.brand{font-weight:800;font-size:20px}
+
+.nav a{
+  margin:0 10px;
+  text-decoration:none;
+  color:var(--muted);
+  font-weight:600;
+}
+
+.btn{
+  border:none;
+  padding:12px 18px;
+  border-radius:12px;
+  font-weight:700;
+  cursor:pointer;
+  background:white;
+  border:1px solid var(--border);
+}
+
+.btn.cta{
+  background:var(--cta);
+  color:black;
+}
+
+.hero{
+  margin-top:20px;
+  padding:40px;
+  border-radius:22px;
+  background:rgba(255,255,255,.55);
+  backdrop-filter:blur(12px);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:20px;
+}
+
+.hero img{
+  width:100%;
+  border-radius:16px;
+}
+
+.section{margin-top:50px}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+.card{
+  background:var(--card);
+  padding:18px;
+  border-radius:18px;
+  border:1px solid var(--border);
+}
+
+.card img{
+  width:100%;
+  border-radius:12px;
+  margin-bottom:8px;
+}
+
+.downloads{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+pre{
+  background:#111;
+  color:#eaeaea;
+  padding:14px;
+  border-radius:14px;
+  overflow:auto;
+}
+
+.footer{
+  margin-top:60px;
+  padding-top:20px;
+  border-top:1px solid var(--border);
+  text-align:center;
+  color:var(--muted);
+}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr}
+  .grid,.downloads{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<header class="topbar">
+  <div class="brand">Placement OS</div>
+  <nav class="nav">
+    <a href="#features">Features</a>
+    <a href="#amd">AMD</a>
+    <a href="#quickstart">Setup</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <a href="#downloads"><button class="btn cta">Download Now</button></a>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <h1>Your AI Placement Command Center</h1>
+    <p>
+      Practice coding, run voice interviews, analyze resumes,
+      and track progress — all in one offline desktop app.
+    </p>
+
+    
+    <!-- Use #features or a video link -->
+   
+  </div>
+
+  <img src="https://picsum.photos/600/420" alt="App preview">
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="section">
+  <h2>Everything you need to become placement-ready</h2>
+
+  <div class="grid">
+
+    <div class="card">
+      <img src="https://picsum.photos/400/250">
+      <h3>AI Coding IDE</h3>
+      <p>Solve problems with real-time feedback and hints.</p>
+    </div>
+
+    <div class="card">
+      <img src="https://picsum.photos/401/250">
+      <h3>Voice Mock Interviews</h3>
+      <p>Practice realistic interviews using conversational AI.</p>
+    </div>
+
+    <div class="card">
+      <img src="https://picsum.photos/402/250">
+      <h3>Resume Analyzer</h3>
+      <p>ATS scoring and improvement suggestions locally.</p>
+    </div>
+
+    <div class="card">
+      <img src="https://picsum.photos/403/250">
+      <h3>Roadmaps & Plans</h3>
+      <p>Auto-generated preparation plans tailored to your goals.</p>
+    </div>
+
+    <div class="card">
+      <img src="https://picsum.photos/404/250">
+      <h3>Progress Tracking</h3>
+      <p>Monitor strengths, weaknesses, and streaks.</p>
+    </div>
+
+    <div class="card">
+      <img src="https://picsum.photos/405/250">
+      <h3>Offline AI Engine</h3>
+      <p>Runs fully on your device using local models.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- AMD PRODUCTS/SOLUTIONS -->
+<section id="amd" class="section">
+  <h2>Usage of AMD Products/Solutions</h2>
+  <p style="max-width:800px;margin-bottom:24px;">
+    Placement OS is built to leverage AMD's powerful hardware and software ecosystem for optimal AI performance.
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>🔴 AMD ROCm</h3>
+      <p>Utilizes AMD ROCm open software platform for GPU-accelerated AI model inference, enabling fast local LLM responses.</p>
+    </div>
+
+    <div class="card">
+      <h3>🔴 AMD Ryzen AI</h3>
+      <p>Optimized for AMD Ryzen processors with integrated NPU for efficient on-device AI workloads and reduced power consumption.</p>
+    </div>
+
+    <div class="card">
+      <h3>🔴 AMD Radeon GPUs</h3>
+      <p>Supports AMD Radeon graphics cards for accelerated ML inference using Ollama with ROCm backend.</p>
+    </div>
+
+    <div class="card">
+      <h3>🔴 AMD Instinct</h3>
+      <p>Compatible with AMD Instinct accelerators for enterprise-grade AI performance in larger deployments.</p>
+    </div>
+
+    <div class="card">
+      <h3>🔴 AMD XDNA Architecture</h3>
+      <p>Leverages AMD's XDNA AI engine architecture for dedicated neural processing without GPU overhead.</p>
+    </div>
+
+    <div class="card">
+      <h3>🔴 AMD Software Stack</h3>
+      <p>Built using AMD-optimized libraries including MIOpen, rocBLAS, and HIP for cross-platform GPU computing.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SCREENSHOTS -->
+<section class="section">
+  <h2>Inside the App</h2>
+
+  <div class="grid">
+    <div class="card">
+      <img src="https://picsum.photos/700/420">
+      <p>Dashboard & analytics</p>
+    </div>
+
+    <div class="card">
+      <img src="https://picsum.photos/701/420">
+      <p>Interview simulator</p>
+    </div>
+
+    <div class="card">
+      <img src="https://picsum.photos/702/420">
+      <p>Coding workspace</p>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOADS -->
+<section id="downloads" class="section">
+  <h2>Download</h2>
+
+  <div class="downloads">
+
+    <div class="card">
+      <h3>🪟 Windows</h3>
+      <a class="btn cta" href="https://github.com/Vetri1706/placement-OS/releases/latest/download/PlacementOS-Setup-0.0.0.exe" target="_blank" style="display:inline-block;text-decoration:none;margin-bottom:10px;">Download .exe</a>
+      <p style="font-size:13px;margin-top:8px;">Double-click installer to install</p>
+    </div>
+
+    <div class="card">
+      <h3>🐧 Linux</h3>
+      <a class="btn cta" href="https://github.com/Vetri1706/placement-OS/releases/latest/download/Placement.OS-0.0.0.AppImage" target="_blank" style="display:inline-block;text-decoration:none;margin-bottom:10px;">Download AppImage</a>
+      <p style="font-size:13px;margin-top:8px;">Make executable → Run</p>
+    </div>
+
+    <div class="card">
+      <h3>🍎 macOS</h3>
+      <a class="btn cta" href="https://github.com/Vetri1706/placement-OS/releases/latest/download/PlacementOS-0.0.0-mac.zip" target="_blank" style="display:inline-block;text-decoration:none;margin-bottom:10px;">Download mac.zip</a>
+      <p style="font-size:13px;margin-top:8px;">Extract → Move to Applications → Open</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- INSTALLATION INSTRUCTIONS -->
+<section class="section">
+  <h2>Installation Instructions</h2>
+
+  <div class="grid">
+    <div class="card">
+      <h3>🪟 Windows</h3>
+      <ol style="text-align:left;padding-left:20px;margin:0;">
+        <li>Download the .exe installer</li>
+        <li>Double-click to run</li>
+        <li>Follow installation wizard</li>
+        <li>Launch from Start Menu</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>🐧 Linux (AppImage)</h3>
+      <pre style="font-size:12px;text-align:left;margin:8px 0;"><code>chmod +x Placement-OS*.AppImage
+./Placement-OS*.AppImage</code></pre>
+      <p style="font-size:13px;">Or: Right-click → Properties → Allow executing as program</p>
+    </div>
+
+    <div class="card">
+      <h3>🍎 macOS</h3>
+      <ol style="text-align:left;padding-left:20px;margin:0;">
+        <li>Download and extract zip</li>
+        <li>Move app to Applications</li>
+        <li>Right-click → Open (first time)</li>
+        <li>Allow in Security settings if prompted</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENTS -->
+<section class="section">
+  <h2>System Requirements</h2>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Minimum</h3>
+      <p>8 GB RAM • Modern CPU • 8 GB disk</p>
+    </div>
+
+    <div class="card">
+      <h3>Recommended</h3>
+      <p>16 GB RAM • SSD • Microphone</p>
+    </div>
+
+    <div class="card">
+      <h3>Offline Ready</h3>
+      <p>Internet only needed for first setup.</p>
+    </div>
+  </div>
+</section>
+
+<!-- QUICK START -->
+<section id="quickstart" class="section">
+  <h2>Quick Start</h2>
+
+  <h3>Install Ollama</h3>
+  <pre><code>curl -fsSL https://ollama.com/install.sh | sh</code></pre>
+
+  <h3>Download model</h3>
+  <pre><code>ollama pull qwen2.5-coder:7b</code></pre>
+
+  <h3>Run service</h3>
+  <pre><code>ollama serve</code></pre>
+</section>
+
+
+
+<!-- FAQ -->
+<section class="section">
+  <h2>FAQ</h2>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Does it require internet?</h3>
+      <p>No, after setup.</p>
+    </div>
+
+    <div class="card">
+      <h3>Is data uploaded?</h3>
+      <p>No. Runs locally.</p>
+    </div>
+
+    <div class="card">
+      <h3>Which models?</h3>
+      <p>Local LLMs via Ollama Qwen model.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="padding: 50px 20px; font-family: sans-serif; max-width: 1000px; margin: auto;">
+  <h2 style="text-align: center; margin-bottom: 40px;">Contact Us</h2>
+
+  <!-- Container for side-by-side cards -->
+  <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+
+    <!-- Left Card: Contact Info -->
+    <div style="flex: 1; min-width: 300px; padding: 30px; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: #fff; text-align: center;">
+      <h3 style="margin-top: 0;">Email</h3>
+      <p><a href="mailto:vetrikalanjiyam@gmail.com" style="color: #007bff; text-decoration: none; font-weight: bold;">vetrikalanjiyam@gmail.com</a></p>
+
+      <h3 style="margin-top: 30px;">GitHub</h3>
+      <!-- GitHub Icon Redirect -->
+      <a href="https://github.com" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+        <i class="fa-brands fa-github" style="font-size: 4rem; color: #333;"></i>
+        <p style="color: #666; margin-top: 10px;">View Repository</p>
+      </a>
+    </div>
+
+    <!-- Right Card: Send Message Form -->
+  
+
+  </div>
+</section>
+
+
+<footer class="footer">
+  © 2026 Placement OS — Local-first AI preparation platform
+</footer>
+
+</div>
+</body>
+</html>
