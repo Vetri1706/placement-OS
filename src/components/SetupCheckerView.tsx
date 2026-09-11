@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, XCircle, AlertTriangle, RefreshCw, ExternalLink, Mic, HardDrive, Brain } from "lucide-react";
 import GlassCard from "./GlassCard";
-import { checkOllamaHealth, getOllamaTags, REQUIRED_MODEL } from "@/lib/aiClient";
+import { checkOllamaHealth, getOllamaTags, FALLBACK_MODEL } from "@/lib/aiClient";
 import { useAppStore } from "@/store/useAppStore";
 
 type MicStatus =
@@ -50,7 +50,7 @@ export default function SetupCheckerView() {
   const [mic, setMic] = useState<MicStatus>({ state: "unknown" });
   const [storage, setStorage] = useState<StorageStatus>({ state: "unknown" });
 
-  const hasRequiredModel = useMemo(() => ollamaModels.some((m) => m === REQUIRED_MODEL || m.startsWith("qwen2.5-coder")), [ollamaModels]);
+  const hasRequiredModel = useMemo(() => ollamaModels.some((m) => m === FALLBACK_MODEL || m.startsWith("qwen2.5-coder")), [ollamaModels]);
 
   const runChecks = useCallback(async () => {
     setChecking(true);
@@ -147,7 +147,7 @@ export default function SetupCheckerView() {
             ok={ollamaOk}
             details={
               ollamaOk
-                ? `Ollama is reachable. Required model: ${REQUIRED_MODEL}.`
+                ? `Ollama is reachable. Required model: ${FALLBACK_MODEL}.`
                 : "Ollama not detected on http://localhost:11434 (install + start the service)."
             }
           />
@@ -155,14 +155,14 @@ export default function SetupCheckerView() {
           <StatusRow
             label="Required model available"
             ok={ollamaOk ? hasRequiredModel : null}
-            details={hasRequiredModel ? `Found ${REQUIRED_MODEL}.` : `Run: ollama pull ${REQUIRED_MODEL}`}
+            details={hasRequiredModel ? `Found ${FALLBACK_MODEL}.` : `Run: ollama pull ${FALLBACK_MODEL}`}
           />
 
           <div className="glass rounded-lg px-3 py-2 text-xs text-muted-foreground leading-relaxed">
             <div className="font-semibold text-foreground mb-1">Quick commands</div>
             <div className="space-y-1">
               <div><code>ollama --version</code></div>
-              <div><code>ollama pull {REQUIRED_MODEL}</code></div>
+              <div><code>ollama pull {FALLBACK_MODEL}</code></div>
               <div><code>ollama serve</code></div>
             </div>
           </div>

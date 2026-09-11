@@ -37,6 +37,7 @@ import {
   formatDiskFree,
   type FullSystemStatus,
 } from "@/services/systemCheck";
+import { FALLBACK_MODEL, setPreferredModel } from "@/lib/aiClient";
 import type { PullProgressEvent } from "@/types/electron";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -356,6 +357,7 @@ interface StartupOrchestratorProps {
 export default function StartupOrchestrator({ onReady }: StartupOrchestratorProps) {
   const [phase, setPhase] = useState<"loading" | "checking" | "done">("loading");
   const [status, setStatus] = useState<FullSystemStatus | null>(null);
+  const [selectedModel, setSelectedModel] = useState<string | null>(null);
   const [isStartingOllama, setIsStartingOllama] = useState(false);
   const [ollamaStartError, setOllamaStartError] = useState<ActionError | null>(null);
   const [pullError, setPullError] = useState<ActionError | null>(null);
@@ -382,6 +384,19 @@ export default function StartupOrchestrator({ onReady }: StartupOrchestratorProp
     const t = setTimeout(runChecks, 1200);
     return () => clearTimeout(t);
   }, [runChecks]);
+
+  useEffect(() => {
+    if (status?.models?.length) {
+      const stored = window.appStore?.get("ollama:model");
+      if (typeof stored === "string" && status.models.includes(stored)) {
+        setSelectedModel(stored);
+      } else {
+        setSelectedModel(status.models[0]);
+      }
+      return;
+    }
+    setSelectedModel(null);
+  }, [status]);
 
   // ── Auto-launch countdown ──────────────────────────────────────────────────
   useEffect(() => {
@@ -433,11 +448,11 @@ export default function StartupOrchestrator({ onReady }: StartupOrchestratorProp
   }, [runChecks]);
 
   // ── Fix: pull model ───────────────────────────────────────────────────────
-  const handlePullModel = useCallback(async () => {
+  const handlePullModel = useCallback(async (modelName: string = FALLBACK_MODEL) => {
     if (!window.systemCheck) {
       setPullError({
         text: "Running in browser mode — pull the model manually in a terminal:",
-        cmd: "ollama pull qwen2.5-coder:7b",
+        cmd: `ollama pull ${modelName}`,
       });
       return;
     }
@@ -460,7 +475,7 @@ export default function StartupOrchestrator({ onReady }: StartupOrchestratorProp
     });
 
     try {
-      const result = await window.systemCheck.pullModel("qwen2.5-coder:7b");
+      const result = await window.systemCheck.pullModel(modelName);
       if (!result.ok) {
         const isNotFound = result.stderr?.includes("ENOENT") || result.stderr?.includes("not found");
         setPullError({
@@ -469,17 +484,27 @@ export default function StartupOrchestrator({ onReady }: StartupOrchestratorProp
             : result.stderr
             ? `Download failed: ${result.stderr.slice(0, 120)}`
             : "Download failed. Ensure Ollama is running, then:",
-          cmd: "ollama pull qwen2.5-coder:7b",
+          cmd: `ollama pull ${modelName}`,
         });
       }
     } catch (e) {
-      setPullError({ text: e instanceof Error ? e.message : "Unexpected error.", cmd: "ollama pull qwen2.5-coder:7b" });
+      setPullError({ text: e instanceof Error ? e.message : "Unexpected error.", cmd: `ollama pull ${modelName}` });
     }
 
     window.systemCheck.offPullProgress();
     setPull(null);
     await runChecks();
   }, [runChecks]);
+
+  const handleUseModel = useCallback(async () => {
+    if (!selectedModel) return;
+    setPreferredModel(selectedModel);
+    if (!status?.models.includes(selectedModel)) {
+      await handlePullModel(selectedModel);
+      return;
+    }
+    await runChecks();
+  }, [handlePullModel, runChecks, selectedModel, status]);
 
   // ── Derived state ──────────────────────────────────────────────────────────
   const checks = buildChecks(status);
@@ -632,6 +657,42 @@ export default function StartupOrchestrator({ onReady }: StartupOrchestratorProp
                 {checks.filter((c) => c.state === "warning").length} warnings
               </span>
             </div>
+
+            {status?.models && (
+              <div className="rounded-xl border border-white/10 bg-black/20 p-3 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <label htmlFor="model-select" className="text-xs font-semibold text-white/70">
+                    AI model
+                  </label>
+                  <button
+                    onClick={handleUseModel}
+                    disabled={!selectedModel || pull !== null || isStartingOllama}
+                    className="px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/25 text-emerald-300 text-xs font-bold hover:bg-emerald-500/25 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    Use / Pull
+                  </button>
+                </div>
+                <select
+                  id="model-select"
+                  value={selectedModel ?? ""}
+                  onChange={(e) => setSelectedModel(e.target.value || null)}
+                  disabled={!status.models.length || pull !== null || isStartingOllama}
+                  className="w-full rounded-lg bg-white/5 border border-white/12 px-2.5 py-2 text-xs text-white/85 outline-none focus:border-emerald-400/40 disabled:opacity-40"
+                >
+                  {status.models.length ? (
+                    status.models.map((model) => (
+                      <option key={model} value={model} className="bg-slate-900 text-white">
+                        {model}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" className="bg-slate-900 text-white">
+                      No models detected
+                    </option>
+                  )}
+                </select>
+              </div>
+            )}
 
             {/* Primary action */}
             <button
