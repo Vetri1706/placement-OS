@@ -1,6 +1,5 @@
 const OLLAMA_BASE = "http://localhost:11434";
-export const REQUIRED_MODEL = "qwen2.5-coder:7b";
-const MODEL = REQUIRED_MODEL;
+export const FALLBACK_MODEL = "qwen2.5-coder:7b";
 
 export type OllamaTags = {
   models: Array<{ name: string }>
@@ -16,11 +15,40 @@ export async function getOllamaTags(): Promise<OllamaTags> {
   return { models: Array.isArray(data.models) ? data.models : [] };
 }
 
+function selectBestAvailableModel(models: string[]): string {
+  if (!models.length) return FALLBACK_MODEL;
+  if (models.includes(FALLBACK_MODEL)) return FALLBACK_MODEL;
+  const qwenCoder = models.find((name) => name.startsWith("qwen2.5-coder"));
+  if (qwenCoder) return qwenCoder;
+  const qwen = models.find((name) => name.startsWith("qwen"));
+  if (qwen) return qwen;
+  return models[0];
+}
+
+export async function getPreferredModel(): Promise<string> {
+  const storedModel = window.appStore?.get("ollama:model");
+  if (typeof storedModel === "string" && storedModel.trim().length > 0) return storedModel;
+
+  try {
+    const tags = await getOllamaTags();
+    const availableModels = tags.models
+      .map((model) => model.name)
+      .filter((name): name is string => typeof name === "string" && name.trim().length > 0);
+    return selectBestAvailableModel(availableModels);
+  } catch {
+    return FALLBACK_MODEL;
+  }
+}
+
+export function setPreferredModel(modelName: string) {
+  window.appStore?.set("ollama:model", modelName);
+}
+
 /* ─── health ─────────────────────────────────────────────── */
 export async function checkOllamaHealth(): Promise<boolean> {
   try {
     const data = await getOllamaTags();
-    return Array.isArray(data.models) && data.models.some((m) => m.name === REQUIRED_MODEL || m.name.startsWith("qwen2.5-coder"));
+    return Array.isArray(data.models) && data.models.some((m) => m.name === FALLBACK_MODEL || m.name.startsWith("qwen2.5-coder"));
   } catch {
     return false;
   }
@@ -28,8 +56,9 @@ export async function checkOllamaHealth(): Promise<boolean> {
 
 /* ─── non-streaming generate ─────────────────────────────── */
 export async function ollamaGenerate(prompt: string, systemPrompt?: string, maxTokens = 1024): Promise<string> {
+  const model = await getPreferredModel();
   const body: Record<string, unknown> = {
-    model: MODEL,
+    model,
     prompt,
     stream: false,
     options: { temperature: 0.2, num_predict: maxTokens, num_ctx: 2048 },
@@ -57,8 +86,9 @@ export async function ollamaStream(
   onToken: (token: string) => void,
   options?: { system?: string; signal?: AbortSignal; maxTokens?: number },
 ): Promise<string> {
+  const model = await getPreferredModel();
   const body: Record<string, unknown> = {
-    model: MODEL,
+    model,
     prompt,
     stream: true,
     options: { temperature: 0.2, num_predict: options?.maxTokens ?? 1024, num_ctx: 2048 },
@@ -111,9 +141,10 @@ export interface ChatMessage {
 }
 
 export async function ollamaChat(messages: ChatMessage[], onToken?: (token: string) => void): Promise<string> {
+  const model = await getPreferredModel();
   const stream = !!onToken;
   const body = {
-    model: MODEL,
+    model,
     messages,
     stream,
     options: { temperature: 0.4, num_predict: 512, num_ctx: 2048 },
